@@ -4,14 +4,20 @@ FROM $BASE_IMAGE
 WORKDIR /
 COPY copy_out.sh .
 
+ARG IMAGE_DIR=/usr/local/apache2/htdocs
+ARG CONF_DIR=/usr/local/apache2/conf
+RUN mkdir -p $IMAGE_DIR
+RUN mkdir -p $CONF_DIR
+RUN touch $CONF_DIR/httpd.conf
 ARG IMAGE_NAME=edpm-hardened-uefi
 ARG IMAGE_FILE=$IMAGE_NAME.qcow2
-ARG CHECKSUM_FILE=$IMAGE_FILE.sha256
+ARG CHECKSUM_FILE=$IMAGE_FILE.md5sum
+
 
 COPY $IMAGE_FILE .
 COPY $CHECKSUM_FILE .
 ENV SRC_DIR=/
-ENV DEST_DIR=/target
+ENV DEST_DIR=$IMAGE_DIR
 ENV CHECKSUM_FILE=$CHECKSUM_FILE
 
 CMD ["/copy_out.sh"]

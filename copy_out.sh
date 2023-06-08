@@ -38,12 +38,14 @@ if [ ! -f $src_checksum ]; then
     exit 1
 fi
 
-dest_checksum=${DEST_DIR%%/}/${CHECKSUM_FILE}
-touch $dest_checksum
 while read -r checksum_entry; do
     file_name=$(echo "$checksum_entry" | cut -d " " -f 3)
+    dest_dir=${DEST_DIR%%/}/images/${file_name}
+    mkdir -p ${dest_dir}
+    dest_checksum=${dest_dir}/compressed-${CHECKSUM_FILE}
+    touch $dest_checksum
     src_file_name=${SRC_DIR%%/}/${file_name}
-    dest_file_name=${DEST_DIR%%/}/${file_name}
+    dest_file_name=${dest_dir}/compressed-${file_name}
     if [ ! -f $dest_file_name ]; then
         echo "$dest_file_name does not exist, copying"
         do_copy=1
@@ -55,8 +57,10 @@ while read -r checksum_entry; do
         do_copy=1
     fi
     if [[ $do_copy -eq 1 ]]; then
+	
         cp -v $src_file_name $dest_file_name
     fi
 done < $src_checksum
 cp -v $src_checksum $dest_checksum
-sha256sum -c $dest_checksum
+md5sum -c $dest_checksum
+sed -i 's/edpm-hardened-uefi/compressed-edpm-hardened-uefi/g' $dest_checksum
