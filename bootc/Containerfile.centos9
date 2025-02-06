@@ -45,7 +45,6 @@ ARG LIBVIRT_PACKAGES="\
     libvirt-daemon \
     qemu-kvm \
     qemu-img \
-    libguestfs \
     libseccomp \
     swtpm \
     swtpm-tools \
