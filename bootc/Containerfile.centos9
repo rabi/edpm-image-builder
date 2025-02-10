@@ -65,6 +65,9 @@ RUN ln -s /etc/sysconfig/network-scripts/ifdown /usr/sbin/ifdown
 COPY ansible-facts/bootc.fact /etc/ansible/facts.d/bootc.fact
 RUN chmod +x /etc/ansible/facts.d/bootc.fact
 
+# Disable automatic update check and reboot
+RUN systemctl mask bootc-fetch-apply-updates.timer
+
 # This should be the last command
 # https://docs.fedoraproject.org/en-US/bootc/building-containers/#_linting
 RUN bootc container lint
