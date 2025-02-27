@@ -49,13 +49,17 @@ jobs:
       run: |
         echo "latesttag=${{ steps.branch-name.outputs.current_branch }}-latest" >> $GITHUB_ENV
 
+    - name: Set EDPM_* env vars
+      run: |
+        echo "EDPM_BOOTC_REPO=${{ env.imageregistry }}/${{ env.imagenamespace }}/edpm-bootc" >> $GITHUB_ENV
+        echo "EDPM_BOOTC_TAG=${{ env.latesttag }}" >> $GITHUB_ENV
+
     - name: Build output/yum.repos.d
       id: build-output-yum-repos-d
       run: |
-        export EDPM_BOOTC_TAG=${latesttag}
         podman run --rm -it -v .:/bootc:rw,z quay.io/centos/centos:stream9 /bin/bash -c "cd bootc; dnf -y install make; make output/yum.repos.d"
 
-    - name: Build and tag
+    - name: Build and tag edpm-bootc container image
       id: buildah-build-edpm-bootc
       uses: redhat-actions/buildah-build@v2
       with:
@@ -65,7 +69,7 @@ jobs:
           ./bootc/Containerfile.centos9
         context: bootc
 
-    - name: Push edpm-bootc To ${{ env.imageregistry }}
+    - name: Push edpm-bootc container image to ${{ env.imageregistry }}
       id: push-edpm-bootc
       uses: redhat-actions/push-to-registry@v2
       with:
@@ -79,3 +83,43 @@ jobs:
       run: |
         echo "Image pushed to ${{ steps.push-edpm-bootc.outputs.registry-paths }}"
         echo "Image digest: ${{ steps.push-edpm-bootc.outputs.digest }}"
+
+    - name: bootc-image-builder edpm-bootc qcow2 image
+      id: edpm-bootc-qcow2-image-builder
+      run: |
+        # workaround https://github.com/containers/podman/issues/21683
+        sudo apt install -y sqlite3
+        echo "update DBConfig set GraphDriver = 'overlay' where GraphDriver = '';" | sudo sh -c '(cd /var/lib/containers/storage && sqlite3 db.sql)'
+        make output
+        # Pull the edpm-bootc container image as sudo. Previous build commands
+        # don't use sudo.
+        sudo podman pull ${{ env.imageregistry }}/${{ env.imagenamespace  }}/edpm-bootc:${{ env.latesttag }}
+        make edpm-bootc.qcow2-no-build
+        make package-cp-deps
+
+    - name: Build and tag edpm-bootc qcow2 container image
+      id: buildah-build-edpm-bootc-qcow2
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: edpm-bootc
+        tags: ${{ env.latesttag }}-qcow2 ${{ github.sha }}-qcow2
+        containerfiles: |
+          ./bootc/output/Containerfile.image
+        context: bootc/output
+        build-args: |
+          IMAGE_NAME=edpm-bootc
+
+    - name: Push edpm-bootc qcow2 container image to ${{ env.imageregistry }}
+      id: push-edpm-bootc-qcow2
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: edpm-bootc
+        tags: ${{ env.latesttag }}-qcow2
+        registry: ${{ env.imageregistry }}/${{ env.imagenamespace }}
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+
+    - name: Print qcow2 image url and digest
+      run: |
+        echo "Image pushed to ${{ steps.push-edpm-bootc-qcow2.outputs.registry-paths }}"
+        echo "Image digest: ${{ steps.push-edpm-bootc-qcow2.outputs.digest }}"

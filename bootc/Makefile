@@ -48,7 +48,10 @@ build-push: build
 	sudo podman push ${EDPM_BOOTC_IMAGE}
 
 .PHONY: edpm-bootc.qcow2
-edpm-bootc.qcow2: build
+edpm-bootc.qcow2: build edpm-bootc.qcow2-no-build
+
+.PHONY: edpm-bootc.qcow2-no-build
+edpm-bootc.qcow2-no-build:
 	ls output/edpm-bootc.qcow2 && exit 0 || true
 	sudo podman run --rm -it --privileged \
 		--security-opt label=type:unconfined_t \
@@ -63,10 +66,16 @@ edpm-bootc.qcow2: build
 	sudo sha256sum edpm-bootc.qcow2 > edpm-bootc.qcow2.sha256
 
 .PHONY: package
-package: edpm-bootc.qcow2
-	sudo buildah inspect ${EDPM_QCOW2_IMAGE} > /dev/null && exit 0 || true
+package: edpm-bootc.qcow2 package-no-qcow2
+
+.PHONY: package-cp-deps
+package-cp-deps:
 	cp ../copy_out.sh output/
 	cp ../Containerfile.image output/
+
+.PHONY: package-no-qcow2
+package-no-qcow2: package-cp-deps
+	sudo buildah inspect ${EDPM_QCOW2_IMAGE} > /dev/null && exit 0 || true
 	cd output
 	sudo buildah bud --build-arg IMAGE_NAME=edpm-bootc -f ./Containerfile.image -t ${EDPM_QCOW2_IMAGE}
 
