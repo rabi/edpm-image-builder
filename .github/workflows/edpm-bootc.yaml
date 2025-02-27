@@ -13,6 +13,7 @@ env:
   imageregistry: 'quay.io'
   imagenamespace: ${{ secrets.IMAGENAMESPACE || secrets.QUAY_USERNAME }}
   latesttag: latest
+  podified: current-podified
 
 jobs:
 
@@ -64,7 +65,7 @@ jobs:
       uses: redhat-actions/buildah-build@v2
       with:
         image: edpm-bootc
-        tags: ${{ env.latesttag }} ${{ github.sha }}
+        tags: ${{ env.latesttag }} ${{ github.sha }} ${{ env.podified }}
         containerfiles: |
           ./bootc/Containerfile.centos9
         context: bootc
