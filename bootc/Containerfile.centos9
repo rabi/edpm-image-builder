@@ -55,11 +55,6 @@ ARG LIBVIRT_PACKAGES="\
 
 RUN dnf -y install $PACKAGES $LIBVIRT_PACKAGES && dnf clean all && systemctl enable $ENABLE_UNITS
 
-# Workaround openstack-network-scripts failing to run update-alternatives
-# See https://issues.redhat.com/browse/OSPRH-13141
-RUN ln -s /etc/sysconfig/network-scripts/ifup /usr/sbin/ifup
-RUN ln -s /etc/sysconfig/network-scripts/ifdown /usr/sbin/ifdown
-
 # Drop Ansible fact into place
 COPY ansible-facts/bootc.fact /etc/ansible/facts.d/bootc.fact
 RUN chmod +x /etc/ansible/facts.d/bootc.fact
