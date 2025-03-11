@@ -34,7 +34,24 @@ commands::
     sudo podman login registry.redhat.io
 
     export EDPM_BOOTC_REPO=quay.io/<account>/edpm-bootc
-    export EDPM_BOOTC_TAG=rhel9
+    export EDPM_BOOTC_TAG=rhel9-rhos-release
+    make build
+    sudo podman push $EDPM_BOOTC_REPO:$EDPM_BOOTC_TAG
+
+To build a RHEL-9.4 based bootc EDPM container using published packages, run
+the following commands::
+
+    # switch to RHEL-9.4 images
+    export BUILDER_IMAGE=registry.redhat.io/rhel9/bootc-image-builder:9.4
+    export EDPM_BASE_IMAGE=registry.redhat.io/rhel9/rhel-bootc:9.4
+
+    # make a custom copy of the subscription-manager script and edit it for
+    # your registration details
+    cp rhsm.sh rhsm-custom.sh
+    export RHSM_SCRIPT=rhsm-custom.sh
+
+    export EDPM_BOOTC_REPO=quay.io/<account>/edpm-bootc
+    export EDPM_BOOTC_TAG=rhel9-rhsm
     make build
     sudo podman push $EDPM_BOOTC_REPO:$EDPM_BOOTC_TAG
 
