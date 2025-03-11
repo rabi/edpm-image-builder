@@ -1,16 +1,12 @@
 SHELL := /bin/bash
 EDPM_BOOTC_REPO ?= quay.io/openstack-k8s-operators/edpm-bootc
 EDPM_BOOTC_TAG ?= latest
-EDPM_CONTAINERFILE ?= Containerfile.centos9
+EDPM_CONTAINERFILE ?= Containerfile
+EDPM_BASE_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
 EDPM_BOOTC_IMAGE ?= ${EDPM_BOOTC_REPO}:${EDPM_BOOTC_TAG}
 EDPM_QCOW2_IMAGE ?= ${EDPM_BOOTC_REPO}:${EDPM_BOOTC_TAG}-qcow2
 BUILDER_IMAGE ?= quay.io/centos-bootc/bootc-image-builder:latest
-HOST_PACKAGES ?= podman osbuild-selinux
-REPO_SETUP ?= current-podified
-REPO_SETUP_BRANCH ?= master
-REPO_SETUP_DISTRO ?= centos9
-REPO_SETUP_DISTRO_MIRROR ?=
-REPO_SETUP_MIRROR ?= https://trunk.rdoproject.org
+HOST_PACKAGES ?= podman osbuild-selinux https://download.devel.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
 
 .ONESHELL:
 
@@ -23,25 +19,22 @@ output:
 
 output/repo-setup: output
 	ls output/repo-setup && exit 0 || true
-	cd output
-	curl -sL https://github.com/openstack-k8s-operators/repo-setup/archive/refs/heads/main.tar.gz | tar xvz
-	cd repo-setup-main
-	python3 -m venv ./venv
-	source ./venv/bin/activate
-	PBR_VERSION=0.0.0 python3 -m pip install ./
-	cp venv/bin/repo-setup ../repo-setup
+	./install-repo-setup.sh
 
 output/yum.repos.d: output/repo-setup
 	ls output/yum.repos.d && exit 0 || true
-	cd output
-	mkdir -p yum.repos.d
-	./repo-setup --output-path yum.repos.d --branch ${REPO_SETUP_BRANCH} --rdo-mirror ${REPO_SETUP_MIRROR} -d ${REPO_SETUP_DISTRO} ${REPO_SETUP}
-
+	mkdir -p output/yum.repos.d
+	./run-repo-setup.sh
 
 .PHONY: build
 build: output/yum.repos.d
 	sudo buildah inspect ${EDPM_BOOTC_IMAGE} > /dev/null && exit 0 || true
-	sudo buildah bud -f ${EDPM_CONTAINERFILE} -t ${EDPM_BOOTC_IMAGE} .
+	sudo buildah bud \
+		--build-arg EDPM_BASE_IMAGE=${EDPM_BASE_IMAGE} \
+		--volume /etc/pki/ca-trust:/etc/pki/ca-trust:ro,Z \
+		--volume $(shell pwd)/output/yum.repos.d:/etc/yum.repos.d:rw,Z \
+		-f ${EDPM_CONTAINERFILE} \
+		-t ${EDPM_BOOTC_IMAGE} .
 
 .PHONY: build-push
 build-push: build
