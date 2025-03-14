@@ -1,7 +1,5 @@
-FROM quay.io/centos-bootc/centos-bootc:stream9
-
-RUN rm -rf /etc/yum.repos.d/*.repo
-COPY output/yum.repos.d /etc/yum.repos.d
+ARG EDPM_BASE_IMAGE
+FROM $EDPM_BASE_IMAGE
 
 ARG PACKAGES="\
     bind-utils \
@@ -53,7 +51,14 @@ ARG LIBVIRT_PACKAGES="\
     cyrus-sasl-scram \
     "
 
-RUN dnf -y install $PACKAGES $LIBVIRT_PACKAGES && dnf clean all && systemctl enable $ENABLE_UNITS
+ARG RHSM_SCRIPT=empty.sh
+COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
+RUN /var/tmp/rhsm-script.sh && \
+    dnf -y install $PACKAGES $LIBVIRT_PACKAGES && \
+    dnf clean all && \
+    (subscription-manager remove --all || true) && \
+    (subscription-manager unregister || true) && \
+    systemctl enable $ENABLE_UNITS
 
 # Drop Ansible fact into place
 COPY ansible-facts/bootc.fact /etc/ansible/facts.d/bootc.fact
