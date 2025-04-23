@@ -12,6 +12,7 @@ ARG PACKAGES="\
     crypto-policies-scripts \
     device-mapper-multipath \
     driverctl \
+    growvols \
     grubby \
     iproute-tc \
     iptables-services \
