@@ -52,10 +52,14 @@ ARG LIBVIRT_PACKAGES="\
     cyrus-sasl-scram \
     "
 
+ARG TELEMETRY_LOGGING_PACKAGES="\
+    rsyslog-openssl
+    "
+
 ARG RHSM_SCRIPT=empty.sh
 COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
-    dnf -y install $PACKAGES $LIBVIRT_PACKAGES && \
+    dnf -y install $PACKAGES $LIBVIRT_PACKAGES $TELEMETRY_LOGGING_PACKAGES && \
     dnf clean all && \
     (subscription-manager remove --all || true) && \
     (subscription-manager unregister || true) && \
