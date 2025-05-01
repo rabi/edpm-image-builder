@@ -23,6 +23,12 @@ ARG BOOTSTRAP_PACKAGES="\
     openstack-network-scripts \
     "
 
+# dib/ceph packages
+ARG CEPH_PACKAGES="\
+    bind-utils \
+    cephadm \
+    "
+
 # edpm_growvols
 ARG GROWVOLS_PACKAGES="\
     growvols \
@@ -66,8 +72,6 @@ ARG TUNED_PACKAGES="\
     "
 
 ARG PACKAGES="\
-    bind-utils \
-    cephadm \
     chrony \
     cloud-init \
     device-mapper-multipath \
@@ -101,6 +105,7 @@ COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
     dnf -y install \
         $BOOTSTRAP_PACKAGES \
+        $CEPH_PACKAGES \
         $GROWVOLS_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
