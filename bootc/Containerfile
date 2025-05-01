@@ -49,6 +49,11 @@ ARG REBOOT_PACKAGES="\
     yum-utils \
     "
 
+# edpm_sshd
+ARG SSHD_PACKAGES="\
+    openssh-server \
+    "
+
 ARG PACKAGES="\
     bind-utils \
     cephadm \
@@ -59,7 +64,6 @@ ARG PACKAGES="\
     iptables-services \
     iscsi-initiator-utils \
     numactl \
-    openssh-server \
     tuned-profiles-cpu-partitioning \
     "
 ARG ENABLE_UNITS="openvswitch"
@@ -95,6 +99,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $OVS_PACKAGES \
         $PODMAN_PACKAGES \
         $REBOOT_PACKAGES \
+        $SSHD_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
