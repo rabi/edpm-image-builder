@@ -36,11 +36,6 @@ ARG EDPM_BASE_PACKAGES="\
     numactl \
     "
 
-# edpm_growvols
-ARG GROWVOLS_PACKAGES="\
-    growvols \
-    "
-
 # dib/ironic-agent-multipath
 ARG IRONIC_AGENT_MULTIPATH_PACKAGES="\
     iscsi-initiator-utils \
@@ -119,7 +114,6 @@ RUN /var/tmp/rhsm-script.sh && \
         $BOOTSTRAP_PACKAGES \
         $CEPH_PACKAGES \
         $EDPM_BASE_PACKAGES \
-        $GROWVOLS_PACKAGES \
         $IRONIC_AGENT_MULTIPATH_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
