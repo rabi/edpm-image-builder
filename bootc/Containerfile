@@ -44,6 +44,11 @@ ARG NETWORK_CONFIG_PACKAGES="\
     NetworkManager-ovs \
     "
 
+# install_os
+ARG OS_PACKAGES="\
+    chrony \
+    "
+
 # edpm_ovs
 ARG OVS_PACKAGES="\
     openvswitch \
@@ -72,7 +77,6 @@ ARG TUNED_PACKAGES="\
     "
 
 ARG PACKAGES="\
-    chrony \
     cloud-init \
     device-mapper-multipath \
     iptables-services \
@@ -111,6 +115,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
         $NETWORK_CONFIG_PACKAGES \
+        $OS_PACKAGES \
         $OVS_PACKAGES \
         $PODMAN_PACKAGES \
         $REBOOT_PACKAGES \
