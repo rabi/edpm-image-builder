@@ -1,39 +1,90 @@
 ARG EDPM_BASE_IMAGE
 FROM $EDPM_BASE_IMAGE
 
-ARG PACKAGES="\
-    bind-utils \
-    buildah \
-    cephadm \
-    chrony \
-    cloud-init \
-    cronie \
-    crudini \
-    crypto-policies-scripts \
-    device-mapper-multipath \
+# edpm_bootstrap
+ARG BOOTSTRAP_PACKAGES="\
     driverctl \
-    growvols \
-    grubby \
-    iproute-tc \
-    iptables-services \
-    iscsi-initiator-utils \
-    jq \
     lvm2 \
+    crudini \
+    jq \
     nftables \
-    numactl \
-    openssh-server \
-    openstack-network-scripts \
+    NetworkManager \
     openstack-selinux \
-    openvswitch \
-    os-net-config \
-    podman \
     python3-libselinux \
     python3-pyyaml \
     rsync \
     tmpwatch \
-    tuned-profiles-cpu-partitioning \
     sysstat \
+    iproute-tc \
+    ksmtuned \
+    systemd-container \
+    crypto-policies-scripts \
+    grubby \
+    openstack-network-scripts \
+    "
+
+# dib/ceph packages
+ARG CEPH_PACKAGES="\
+    bind-utils \
+    cephadm \
+    "
+
+# dib/edpm-base
+ARG EDPM_BASE_PACKAGES="\
+    device-mapper-multipath \
+    iptables-services \
+    numactl \
+    "
+
+# dib/ironic-agent-multipath
+ARG IRONIC_AGENT_MULTIPATH_PACKAGES="\
+    iscsi-initiator-utils \
+    "
+
+# edpm_logrotate_crond
+ARG LOGROTATE_CROND_PACKAGES="\
+    cronie \
+    "
+# edpm_network_config
+ARG NETWORK_CONFIG_PACKAGES="\
+    os-net-config \
+    NetworkManager-ovs \
+    "
+
+# install_os
+ARG OS_PACKAGES="\
+    chrony \
+    "
+
+# edpm_ovs
+ARG OVS_PACKAGES="\
+    openvswitch \
+    "
+
+# edpm_podman
+ARG PODMAN_PACKAGES="\
+    buildah \
+    podman \
+    "
+
+# edpm_reboot
+ARG REBOOT_PACKAGES="\
     yum-utils \
+    "
+
+# edpm_sshd
+ARG SSHD_PACKAGES="\
+    openssh-server \
+    "
+
+# edpm_tuned
+ARG TUNED_PACKAGES="\
+    tuned \
+    tuned-profiles-cpu-partitioning \
+    "
+
+ARG PACKAGES="\
+    cloud-init \
     "
 ARG ENABLE_UNITS="openvswitch"
 
@@ -53,13 +104,32 @@ ARG LIBVIRT_PACKAGES="\
     "
 
 ARG TELEMETRY_LOGGING_PACKAGES="\
-    rsyslog-openssl
+    rsyslog-openssl \
     "
 
 ARG RHSM_SCRIPT=empty.sh
 COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
-    dnf -y install $PACKAGES $LIBVIRT_PACKAGES $TELEMETRY_LOGGING_PACKAGES && \
+    dnf -y install \
+        $BOOTSTRAP_PACKAGES \
+        $CEPH_PACKAGES \
+        $EDPM_BASE_PACKAGES \
+        $IRONIC_AGENT_MULTIPATH_PACKAGES \
+        $PACKAGES \
+        $LIBVIRT_PACKAGES \
+        $LOGROTATE_CROND_PACKAGES \
+        $NETWORK_CONFIG_PACKAGES \
+        $OS_PACKAGES \
+        $OVS_PACKAGES \
+        $PODMAN_PACKAGES \
+        $REBOOT_PACKAGES \
+        $SSHD_PACKAGES \
+        $TUNED_PACKAGES \
+        $TELEMETRY_LOGGING_PACKAGES && \
+    # edpm_bootstrap
+    source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
+    # edpm_kernel
+    dnf -y remove dracut-config-generic && \
     dnf clean all && \
     (subscription-manager remove --all || true) && \
     (subscription-manager unregister || true) && \
