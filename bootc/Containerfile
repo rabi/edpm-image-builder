@@ -29,6 +29,13 @@ ARG CEPH_PACKAGES="\
     cephadm \
     "
 
+# dib/edpm-base
+ARG EDPM_BASE_PACKAGES="\
+    device-mapper-multipath \
+    iptables-services \
+    numactl \
+    "
+
 # edpm_growvols
 ARG GROWVOLS_PACKAGES="\
     growvols \
@@ -78,10 +85,6 @@ ARG TUNED_PACKAGES="\
 
 ARG PACKAGES="\
     cloud-init \
-    device-mapper-multipath \
-    iptables-services \
-    iscsi-initiator-utils \
-    numactl \
     "
 ARG ENABLE_UNITS="openvswitch"
 
@@ -110,6 +113,7 @@ RUN /var/tmp/rhsm-script.sh && \
     dnf -y install \
         $BOOTSTRAP_PACKAGES \
         $CEPH_PACKAGES \
+        $EDPM_BASE_PACKAGES \
         $GROWVOLS_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
