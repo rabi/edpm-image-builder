@@ -1,38 +1,45 @@
 ARG EDPM_BASE_IMAGE
 FROM $EDPM_BASE_IMAGE
 
+# edpm_bootstrap
+ARG BOOTSTRAP_PACKAGES="\
+    driverctl \
+    lvm2 \
+    crudini \
+    jq \
+    nftables \
+    NetworkManager \
+    openstack-selinux \
+    python3-libselinux \
+    python3-pyyaml \
+    rsync \
+    tmpwatch \
+    sysstat \
+    iproute-tc \
+    ksmtuned \
+    systemd-container \
+    crypto-policies-scripts \
+    grubby \
+    openstack-network-scripts \
+    "
+
+
 ARG PACKAGES="\
     bind-utils \
     buildah \
     cephadm \
     chrony \
     cloud-init \
-    cronie \
-    crudini \
-    crypto-policies-scripts \
     device-mapper-multipath \
-    driverctl \
     growvols \
-    grubby \
-    iproute-tc \
     iptables-services \
     iscsi-initiator-utils \
-    jq \
-    lvm2 \
-    nftables \
     numactl \
     openssh-server \
-    openstack-network-scripts \
-    openstack-selinux \
     openvswitch \
     os-net-config \
     podman \
-    python3-libselinux \
-    python3-pyyaml \
-    rsync \
-    tmpwatch \
     tuned-profiles-cpu-partitioning \
-    sysstat \
     yum-utils \
     "
 ARG ENABLE_UNITS="openvswitch"
@@ -59,7 +66,13 @@ ARG TELEMETRY_LOGGING_PACKAGES="\
 ARG RHSM_SCRIPT=empty.sh
 COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
-    dnf -y install $PACKAGES $LIBVIRT_PACKAGES $TELEMETRY_LOGGING_PACKAGES && \
+    dnf -y install \
+        $BOOTSTRAP_PACKAGES \
+        $PACKAGES \
+        $LIBVIRT_PACKAGES \
+        $TELEMETRY_LOGGING_PACKAGES && \
+    # edpm_bootstrap
+    source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
     dnf clean all && \
     (subscription-manager remove --all || true) && \
     (subscription-manager unregister || true) && \
