@@ -27,6 +27,11 @@ ARG BOOTSTRAP_PACKAGES="\
 ARG LOGROTATE_CROND_PACKAGES="\
     cronie \
     "
+# edpm_network_config
+ARG NETWORK_CONFIG_PACKAGES="\
+    os-net-config \
+    NetworkManager-ovs \
+    "
 
 ARG PACKAGES="\
     bind-utils \
@@ -41,7 +46,6 @@ ARG PACKAGES="\
     numactl \
     openssh-server \
     openvswitch \
-    os-net-config \
     podman \
     tuned-profiles-cpu-partitioning \
     yum-utils \
@@ -75,6 +79,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
+        $NETWORK_CONFIG_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
