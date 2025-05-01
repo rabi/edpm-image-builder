@@ -23,6 +23,11 @@ ARG BOOTSTRAP_PACKAGES="\
     openstack-network-scripts \
     "
 
+# edpm_growvols
+ARG GROWVOLS_PACKAGES="\
+    growvols \
+    "
+
 # edpm_logrotate_crond
 ARG LOGROTATE_CROND_PACKAGES="\
     cronie \
@@ -66,7 +71,6 @@ ARG PACKAGES="\
     chrony \
     cloud-init \
     device-mapper-multipath \
-    growvols \
     iptables-services \
     iscsi-initiator-utils \
     numactl \
@@ -97,6 +101,7 @@ COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
     dnf -y install \
         $BOOTSTRAP_PACKAGES \
+        $GROWVOLS_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
