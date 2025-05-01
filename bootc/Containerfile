@@ -41,6 +41,11 @@ ARG GROWVOLS_PACKAGES="\
     growvols \
     "
 
+# dib/ironic-agent-multipath
+ARG IRONIC_AGENT_MULTIPATH_PACKAGES="\
+    iscsi-initiator-utils \
+    "
+
 # edpm_logrotate_crond
 ARG LOGROTATE_CROND_PACKAGES="\
     cronie \
@@ -104,7 +109,7 @@ ARG LIBVIRT_PACKAGES="\
     "
 
 ARG TELEMETRY_LOGGING_PACKAGES="\
-    rsyslog-openssl
+    rsyslog-openssl \
     "
 
 ARG RHSM_SCRIPT=empty.sh
@@ -115,6 +120,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $CEPH_PACKAGES \
         $EDPM_BASE_PACKAGES \
         $GROWVOLS_PACKAGES \
+        $IRONIC_AGENT_MULTIPATH_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
