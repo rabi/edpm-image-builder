@@ -33,6 +33,11 @@ ARG NETWORK_CONFIG_PACKAGES="\
     NetworkManager-ovs \
     "
 
+# edpm_ovs
+ARG OVS_PACKAGES="\
+    openvswitch \
+    "
+
 ARG PACKAGES="\
     bind-utils \
     buildah \
@@ -45,7 +50,6 @@ ARG PACKAGES="\
     iscsi-initiator-utils \
     numactl \
     openssh-server \
-    openvswitch \
     podman \
     tuned-profiles-cpu-partitioning \
     yum-utils \
@@ -80,6 +84,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
         $NETWORK_CONFIG_PACKAGES \
+        $OVS_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
