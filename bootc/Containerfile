@@ -54,6 +54,12 @@ ARG SSHD_PACKAGES="\
     openssh-server \
     "
 
+# edpm_tuned
+ARG TUNED_PACKAGES="\
+    tuned \
+    tuned-profiles-cpu-partitioning \
+    "
+
 ARG PACKAGES="\
     bind-utils \
     cephadm \
@@ -64,7 +70,6 @@ ARG PACKAGES="\
     iptables-services \
     iscsi-initiator-utils \
     numactl \
-    tuned-profiles-cpu-partitioning \
     "
 ARG ENABLE_UNITS="openvswitch"
 
@@ -100,6 +105,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $PODMAN_PACKAGES \
         $REBOOT_PACKAGES \
         $SSHD_PACKAGES \
+        $TUNED_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
