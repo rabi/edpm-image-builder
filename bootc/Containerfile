@@ -23,6 +23,10 @@ ARG BOOTSTRAP_PACKAGES="\
     openstack-network-scripts \
     "
 
+# edpm_logrotate_crond
+ARG LOGROTATE_CROND_PACKAGES="\
+    cronie \
+    "
 
 ARG PACKAGES="\
     bind-utils \
@@ -70,6 +74,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $BOOTSTRAP_PACKAGES \
         $PACKAGES \
         $LIBVIRT_PACKAGES \
+        $LOGROTATE_CROND_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
