@@ -44,6 +44,11 @@ ARG PODMAN_PACKAGES="\
     podman \
     "
 
+# edpm_reboot
+ARG REBOOT_PACKAGES="\
+    yum-utils \
+    "
+
 ARG PACKAGES="\
     bind-utils \
     cephadm \
@@ -56,7 +61,6 @@ ARG PACKAGES="\
     numactl \
     openssh-server \
     tuned-profiles-cpu-partitioning \
-    yum-utils \
     "
 ARG ENABLE_UNITS="openvswitch"
 
@@ -90,6 +94,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $NETWORK_CONFIG_PACKAGES \
         $OVS_PACKAGES \
         $PODMAN_PACKAGES \
+        $REBOOT_PACKAGES \
         $TELEMETRY_LOGGING_PACKAGES && \
     # edpm_bootstrap
     source /etc/os-release && if [ "${ID}" = "rhel" ]; then dnf -y install rhoso-release; fi && \
