@@ -86,7 +86,7 @@
     name: fs_root
     base: lv_root
     type: xfs
-    label: "img-rootfs"
+    label: "rhoso-rootfs"
     mount:
         mount_point: /
         fstab:
