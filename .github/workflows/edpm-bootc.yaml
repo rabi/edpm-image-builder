@@ -67,7 +67,7 @@ jobs:
         image: edpm-bootc
         tags: ${{ env.latesttag }} ${{ github.sha }} ${{ env.podified }}
         containerfiles: |
-          ./bootc/Containerfile.centos9
+          ./bootc/Containerfile
         context: bootc
 
     - name: Push edpm-bootc container image to ${{ env.imageregistry }}
