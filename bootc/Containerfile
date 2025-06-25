@@ -107,6 +107,10 @@ ARG TELEMETRY_LOGGING_PACKAGES="\
     rsyslog-openssl \
     "
 
+ARG NVMEOF_PACKAGES="\
+    nvme-cli \
+    "
+
 ARG RHSM_SCRIPT=empty.sh
 COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
 RUN /var/tmp/rhsm-script.sh && \
@@ -119,6 +123,7 @@ RUN /var/tmp/rhsm-script.sh && \
         $LIBVIRT_PACKAGES \
         $LOGROTATE_CROND_PACKAGES \
         $NETWORK_CONFIG_PACKAGES \
+        $NVMEOF_PACKAGES \
         $OS_PACKAGES \
         $OVS_PACKAGES \
         $PODMAN_PACKAGES \
