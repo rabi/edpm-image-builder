@@ -69,6 +69,9 @@ jobs:
         tags: ${{ env.latesttag }} ${{ github.sha }} ${{ env.podified }}
         build-args:
           EDPM_BASE_IMAGE=${{ env.EDPM_BASE_IMAGE }}
+        extra-agrs:
+          --volume /etc/pki/ca-trust:/etc/pki/ca-trust:ro,Z \
+          --volume output/yum.repos.d:/etc/yum.repos.d:rw,Z \
         containerfiles: |
           ./bootc/Containerfile
         context: bootc
