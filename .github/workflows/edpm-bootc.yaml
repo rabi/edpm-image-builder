@@ -67,6 +67,8 @@ jobs:
       with:
         image: edpm-bootc
         tags: ${{ env.latesttag }} ${{ github.sha }} ${{ env.podified }}
+        build-args:
+          EDPM_BASE_IMAGE=${{ env.EDPM_BASE_IMAGE }}
         containerfiles: |
           ./bootc/Containerfile
         context: bootc
