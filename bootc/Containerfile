@@ -21,6 +21,7 @@ ARG BOOTSTRAP_PACKAGES="\
     crypto-policies-scripts \
     grubby \
     openstack-network-scripts \
+    sos \
     "
 
 # dib/ceph packages
