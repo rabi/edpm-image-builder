@@ -70,8 +70,7 @@ jobs:
         build-args:
           EDPM_BASE_IMAGE=${{ env.EDPM_BASE_IMAGE }}
         extra-args:
-          --volume /etc/pki/ca-trust:/etc/pki/ca-trust:ro,Z
-          --volume output/yum.repos.d:/etc/yum.repos.d:rw,Z
+          --volume /home/runner/work/edpm-image-builder/edpm-image-builder/bootc/output/yum.repos.d:/etc/yum.repos.d:rw,Z
         containerfiles: |
           ./bootc/Containerfile
         context: bootc
