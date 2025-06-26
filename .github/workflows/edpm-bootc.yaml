@@ -14,6 +14,7 @@ env:
   imagenamespace: ${{ secrets.IMAGENAMESPACE || secrets.QUAY_USERNAME }}
   latesttag: latest
   podified: current-podified
+  EDPM_BASE_IMAGE: quay.io/centos-bootc/centos-bootc:stream9
 
 jobs:
 
