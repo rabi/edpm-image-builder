@@ -141,6 +141,18 @@ RUN /var/tmp/rhsm-script.sh && \
     (subscription-manager unregister || true) && \
     systemctl enable $ENABLE_UNITS
 
+
+# Configure FIPS
+ARG FIPS=1
+RUN if [ "${FIPS}" = "1" ] ; \
+    then \
+        # Enable the FIPS crypto policy
+        update-crypto-policies --no-reload --set FIPS ; \
+        touch /etc/system-fips ; \
+        mkdir -p /usr/lib/bootc/kargs.d ; \
+        echo -e "# Enable FIPS\nkargs = [\"fips=1\"]\n" > /usr/lib/bootc/kargs.d/01-fips.toml ; \
+    fi
+
 # Drop Ansible fact into place
 COPY ansible-facts/bootc.fact /etc/ansible/facts.d/bootc.fact
 RUN chmod +x /etc/ansible/facts.d/bootc.fact
