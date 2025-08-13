@@ -18,6 +18,7 @@
   - interface-names
   - openvswitch
   - override-pip-and-virtualenv
+  - cloud-init-network-renderer
   - remove-resolvconf
   - repo-setup
   min-tmpfs: 7
