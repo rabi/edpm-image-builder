@@ -65,6 +65,7 @@ jobs:
       with:
         image: edpm-bootc
         tags: ${{ env.latesttag }} ${{ github.sha }} ${{ env.podified }}
+        oci: true
         build-args:
           EDPM_BASE_IMAGE=${{ env.EDPM_BASE_IMAGE }}
         extra-args:
