@@ -42,7 +42,7 @@ DEFAULT_MOUNT_OPTIONS = (
     "lv_tmp=rw,nosuid,nodev,noexec,relatime:lv_home=rw,nodev,relatime"
 )
 DEFAULT_MOUNT_OPTION = "rw,relatime"
-PARTITION_SIZES = {
+DEFAULT_PARTITION_SIZES = {
     "efi": 200,
     "bsp": 8,
     "boot": 500,
@@ -77,6 +77,21 @@ def get_args():
         "--disk-size",
         required=True,
         help="Size of the whole disk image, with a required unit MiB or GiB",
+    )
+    parser.add_argument(
+        "--boot-size",
+        default="500MiB",
+        help="Size of the /boot partition, with a required unit MiB or GiB",
+    )
+    parser.add_argument(
+        "--efi-size",
+        default="200MiB",
+        help="Size of the EFI system partition, with a required unit MiB or GiB",
+    )
+    parser.add_argument(
+        "--bsp-size",
+        default="8MiB",
+        help="Size of the BIOS boot partition, with a required unit MiB or GiB",
     )
     parser.add_argument(
         "--volumes",
@@ -187,7 +202,7 @@ def mkfs(name, base, mount_point, options):
     name: {name}
     base: {base}
     type: xfs
-    label: "img-rootfs"
+    label: "rhoso-rootfs"
     mount:
         mount_point: {mount_point}
         fstab:
@@ -211,8 +226,15 @@ def mkfs(name, base, mount_point, options):
 def write_block_device_yaml(args, out):
     sizes = {
         "disk": size_to_mib(args.disk_size),
+        "efi": size_to_mib(args.efi_size),
+        "bsp": size_to_mib(args.bsp_size),
+        "boot": size_to_mib(args.boot_size),
     }
-    sizes.update(PARTITION_SIZES)
+    sizes.update({
+        name: size
+        for name, size in DEFAULT_PARTITION_SIZES.items()
+        if name not in sizes
+    })
     sizes["root"] = (
         sizes["disk"] - sizes["efi"] - sizes["bsp"] - sizes["boot"] - OVERHEAD_PARTITION
     )
