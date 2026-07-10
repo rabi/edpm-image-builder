@@ -39,6 +39,7 @@ if [ ! -f $src_checksum ]; then
 fi
 
 dest_checksum=${DEST_DIR%%/}/${CHECKSUM_FILE}
+checksum_ext="${CHECKSUM_FILE##*.qcow2}"
 touch $dest_checksum
 while read -r checksum_entry; do
     file_name=$(echo "$checksum_entry" | cut -d " " -f 3)
@@ -56,6 +57,13 @@ while read -r checksum_entry; do
     fi
     if [[ $do_copy -eq 1 ]]; then
         cp -v $src_file_name $dest_file_name
+    fi
+    # Generate per-image checksum file so each image is individually
+    # addressable via <image-name>.sha256 by URL convention.
+    per_image_checksum="${DEST_DIR%%/}/${file_name}${checksum_ext}"
+    if [ ! -f "$per_image_checksum" ]; then
+        echo "$checksum_entry" > "$per_image_checksum"
+        echo "Generated per-image checksum: $per_image_checksum"
     fi
 done < $src_checksum
 cp -v $src_checksum $dest_checksum
