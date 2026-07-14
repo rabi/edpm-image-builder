@@ -114,9 +114,8 @@ ARG NVMEOF_PACKAGES="\
 
 ARG USER_PACKAGES=""
 
-ARG RHSM_SCRIPT=empty.sh
-COPY $RHSM_SCRIPT /var/tmp/rhsm-script.sh
-RUN /var/tmp/rhsm-script.sh && \
+RUN --mount=type=secret,id=rhsm,dst=/var/tmp/rhsm-script.sh \
+    if [ -f /var/tmp/rhsm-script.sh ]; then bash /var/tmp/rhsm-script.sh; fi && \
     dnf -y install \
         $BOOTSTRAP_PACKAGES \
         $CEPH_PACKAGES \
