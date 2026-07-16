@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
 # Edit RHSM_ values for the subscription configuration
 RHSM_USER=unset
@@ -13,8 +13,19 @@ RHSM_REPOS=${RHSM_REPOS:-"--enable=rhoso-18.0-for-rhel-${RHEL_MAJOR}-x86_64-rpms
 RHSM_POOL=""
 
 rm -f /etc/yum.repos.d/*.repo
-subscription-manager register --username=$RHSM_USER --password=$RHSM_PASSWORD
+# Disable subscription-manager container detection so that registration
+# works during container builds. subscription-manager checks for
+# /etc/rhsm-host (a symlink to ../run/secrets/rhsm) to detect
+# container mode.
+if [ -L /etc/rhsm-host ]; then
+    rm -f /etc/rhsm-host
+fi
+
+# Suppress xtrace to avoid leaking credentials to the build log
+set +x
+subscription-manager register --username="$RHSM_USER" --password="$RHSM_PASSWORD"
+set -x
 if [ -n "${RHSM_POOL}" ]; then
-    subscription-manager attach --pool=$RHSM_POOL
+    subscription-manager attach --pool="$RHSM_POOL"
 fi
 subscription-manager repos $RHSM_REPOS
