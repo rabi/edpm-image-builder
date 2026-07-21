@@ -8,8 +8,9 @@ EDPM_QCOW2_IMAGE ?= ${EDPM_BOOTC_REPO}:${EDPM_BOOTC_TAG}-qcow2
 BUILDER_IMAGE ?= quay.io/centos-bootc/bootc-image-builder:latest
 HOST_PACKAGES ?= podman osbuild-selinux https://download.devel.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
 USER_PACKAGES ?=
-RHSM_SCRIPT ?= empty.sh
+RHSM_SCRIPT ?=
 FIPS ?= 1
+comma := ,
 
 .ONESHELL:
 
@@ -34,9 +35,9 @@ build: output/yum.repos.d
 	sudo buildah inspect ${EDPM_BOOTC_IMAGE} > /dev/null && exit 0 || true
 	sudo buildah bud \
 		--build-arg EDPM_BASE_IMAGE=${EDPM_BASE_IMAGE} \
-		--build-arg RHSM_SCRIPT=${RHSM_SCRIPT} \
 		--build-arg FIPS=${FIPS} \
 		--build-arg USER_PACKAGES=${USER_PACKAGES} \
+		$(if ${RHSM_SCRIPT},--secret id=rhsm$(comma)src=${RHSM_SCRIPT}) \
 		--volume /etc/pki/ca-trust:/etc/pki/ca-trust:ro,Z \
 		--volume $(shell pwd)/output/yum.repos.d:/etc/yum.repos.d:rw,Z \
 		-f ${EDPM_CONTAINERFILE} \

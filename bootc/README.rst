@@ -82,8 +82,10 @@ packages, run the following commands::
     export RHEL_MAJOR=9
 
     # make a custom copy of the subscription-manager script and edit it for
-    # your registration details
+    # your registration details. The script is mounted as a build secret and
+    # will not be committed to any image layer.
     cp rhsm.sh rhsm-custom.sh
+    # edit RHSM_USER and RHSM_PASSWORD in rhsm-custom.sh
     export RHSM_SCRIPT=rhsm-custom.sh
 
     export EDPM_BOOTC_REPO=quay.io/<account>/edpm-bootc
