@@ -2,16 +2,22 @@
 - job:
     name: eib-content-provider-build-images-cs9
     parent: content-provider-build-images-base
+    timeout: 2700
+    vars:
+      cifmw_edpm_build_images_bootc: true
 
 - job:
     name: eib-content-provider-build-images-cs10
     parent: content-provider-build-images-base
     nodeset: centos-stream-10
+    timeout: 2700
     vars:
       cifmw_repo_setup_dist_major_version: 10
       cifmw_repo_setup_branch: master
       cifmw_repo_setup_promotion: current
       cifmw_edpm_build_images_base_image: quay.io/centos/centos:stream10-minimal
+      cifmw_edpm_build_images_bootc: true
+      cifmw_edpm_build_images_bootc_base_image: quay.io/centos-bootc/centos-bootc:stream10
 
 - job:
     name: eib-crc-podified-edpm-baremetal
@@ -32,6 +38,27 @@
       cifmw_edpm_deploy_baremetal_custom_bootstrap: true
     pre-run:
       - playbooks/pre-deploy-cs10-bootstrap.yml
+
+- job:
+    name: eib-crc-podified-edpm-baremetal-bootc
+    parent: cifmw-crc-podified-edpm-baremetal-bootc
+    dependencies: ["eib-content-provider-build-images-cs9"]
+    vars:
+      cifmw_update_containers_openstack: true
+      cifmw_install_yamls_vars:
+        BAREMETAL_OS_IMG: edpm-bootc.qcow2
+
+- job:
+    name: eib-crc-podified-edpm-baremetal-bootc-cs10
+    parent: cifmw-crc-podified-edpm-baremetal-bootc
+    dependencies: ["eib-content-provider-build-images-cs10"]
+    vars:
+      cifmw_update_containers_openstack: true
+      cifmw_install_yamls_vars:
+        BAREMETAL_OS_IMG: edpm-bootc.qcow2
+      cifmw_install_yamls_vars_patch_cs10:
+        dataplane_repo_setup_repo: current
+        dataplane_repo_setup_branch: master
 
 - job:
     name: eib-podified-multinode-ironic-deployment

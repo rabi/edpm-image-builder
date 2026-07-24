@@ -15,14 +15,15 @@ then run the following commands::
     export EDPM_BASE_IMAGE=quay.io/centos-bootc/centos-bootc:stream10
     export REPO_SETUP_DISTRO=centos10
     export REPO_SETUP_BRANCH=master
-    export REPO_SETUP=podified-ci-testing
+    export REPO_SETUP=current
     make build
     sudo podman push $EDPM_BOOTC_REPO:$EDPM_BOOTC_TAG
 
 .. note::
 
    ``current-podified`` is not yet available for CentOS Stream 10. The above
-   uses ``podified-ci-testing`` and ``master`` branch until it is.
+   uses ``current`` and ``master`` branch until promotion to
+   ``current-podified`` includes the required fixes.
 
 To continue using CentOS Stream 9, leave the defaults in place and run
 ``make build`` (the default tag is ``latest``).

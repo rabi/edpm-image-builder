@@ -7,4 +7,6 @@
         - eib-content-provider-build-images-cs10
         - eib-crc-podified-edpm-baremetal
         - eib-crc-podified-edpm-baremetal-cs10
+        - eib-crc-podified-edpm-baremetal-bootc
+        - eib-crc-podified-edpm-baremetal-bootc-cs10
         - eib-podified-multinode-ironic-deployment
