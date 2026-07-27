@@ -144,6 +144,11 @@ RUN --mount=type=secret,id=rhsm,dst=/var/tmp/rhsm-script.sh \
     (subscription-manager unregister || true) && \
     systemctl enable $ENABLE_UNITS
 
+COPY patch-dracut-fips.py /usr/local/bin/patch-dracut-fips.py
+# Patch on-disk fips.sh. Initramfs rebuild happens after FIPS config below
+# so the booted ramdisk contains the bind-mount fallback.
+RUN python3 /usr/local/bin/patch-dracut-fips.py && \
+    bash -n /usr/lib/dracut/modules.d/01fips/fips.sh
 
 # Configure FIPS
 ARG FIPS=1
@@ -154,7 +159,13 @@ RUN if [ "${FIPS}" = "1" ] ; \
         touch /etc/system-fips ; \
         mkdir -p /usr/lib/bootc/kargs.d ; \
         echo -e "# Enable FIPS\nkargs = [\"fips=1\"]\n" > /usr/lib/bootc/kargs.d/01-fips.toml ; \
-    fi
+    fi && \
+    for kver in /usr/lib/modules/*; do \
+        [ -d "${kver}" ] || continue; \
+        kver=$(basename "${kver}"); \
+        dracut --force --no-hostonly --reproducible \
+            "/usr/lib/modules/${kver}/initramfs.img" "${kver}"; \
+    done
 
 # Drop Ansible fact into place
 COPY ansible-facts/bootc.fact /etc/ansible/facts.d/bootc.fact

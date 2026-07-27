@@ -28,6 +28,12 @@ then run the following commands::
 To continue using CentOS Stream 9, leave the defaults in place and run
 ``make build`` (the default tag is ``latest``).
 
+FIPS-enabled images include a build-time patch to dracut's ``01fips`` module
+so bootc deployments on single-root layouts can bind-mount the existing
+``/boot`` tree when the standard read-only device mount fails. The initramfs
+is rebuilt after that patch so the change is present in the booted ramdisk,
+not only on the root filesystem.
+
 To build a RHEL 9 based bootc EDPM container image using internal repositories,
 install the required certificates then run the following commands::
 
