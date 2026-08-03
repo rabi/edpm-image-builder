@@ -116,6 +116,10 @@ ARG USER_PACKAGES=""
 
 RUN --mount=type=secret,id=rhsm,dst=/var/tmp/rhsm-script.sh \
     if [ -f /var/tmp/rhsm-script.sh ]; then bash /var/tmp/rhsm-script.sh; fi && \
+    # centos-bootc can ship a NetworkManager NEVRA newer than BaseOS/AppStream
+    # (e.g. 1.58.0 vs 1.58~rc1). NetworkManager-ovs requires an exact match, so
+    # align the installed NM stack with the mounted repos before installing.
+    dnf -y distro-sync 'NetworkManager*' && \
     dnf -y install \
         $BOOTSTRAP_PACKAGES \
         $CEPH_PACKAGES \
