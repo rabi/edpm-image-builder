@@ -1,5 +1,5 @@
 # This file was generated with:
-# block-device-yaml --disk-size 5GiB --output dib/edpm-partition-uefi/block-device-default.yaml
+# block-device-yaml --disk-size 7GiB --boot-size 2048MiB --output dib/edpm-partition-uefi/block-device-default.yaml
 # See: https://github.com/openstack-k8s-operators/edpm-image-builder/
 - local_loop:
     name: image0
@@ -22,7 +22,7 @@
         size: 8MiB
       - name: boot
         type: 'BC13C2FF-59E6-4262-A352-B275FD6F7172'
-        size: 500MiB
+        size: 2048MiB
         mkfs:
           type: ext4
           mount:
@@ -32,9 +32,9 @@
               fsck-passno: 1
       - name: root
         flags: [ boot ]
-        # The passed-in DIB_IMAGE_SIZE is 5120MiB
+        # The passed-in DIB_IMAGE_SIZE is 7168MiB
         # Otherwise, there is a 2MiB overhead
-        size: 4410MiB
+        size: 4910MiB
 - lvm:
     name: lvm
     base: [ root ]
@@ -51,12 +51,12 @@
           type: thin-pool
           base: vg
           # 20MiB overhead from root partition size
-          size: 4390MiB
+          size: 4890MiB
         - name: lv_root
           type: thin
           thin-pool: lv_thinpool
           base: vg
-          size: 2236MiB
+          size: 2736MiB
         - name: lv_tmp
           type: thin
           thin-pool: lv_thinpool

@@ -28,7 +28,7 @@
     DIB_RELEASE: '9'
     DIB_PYTHON_VERSION: '3'
     DIB_DHCP_TIMEOUT: '60'
-    DIB_IMAGE_SIZE: '5'
+    DIB_IMAGE_SIZE: '7'
     DIB_MODPROBE_BLACKLIST: 'usb-storage cramfs freevxfs jffs2 hfs hfsplus squashfs udf bluetooth'
     DIB_BOOTLOADER_DEFAULT_CMDLINE: 'rd.multipath=default'
     DIB_BOOTLOADER_VIRTUAL_TERMINAL: ''
