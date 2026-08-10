@@ -45,7 +45,7 @@ DEFAULT_MOUNT_OPTION = "rw,relatime"
 DEFAULT_PARTITION_SIZES = {
     "efi": 200,
     "bsp": 8,
-    "boot": 500,
+    "boot": 2048,
 }
 
 UNIT_BYTES = {"MiB": BYTES_MIB, "GiB": BYTES_GIB}
@@ -80,7 +80,7 @@ def get_args():
     )
     parser.add_argument(
         "--boot-size",
-        default="500MiB",
+        default="2048MiB",
         help="Size of the /boot partition, with a required unit MiB or GiB",
     )
     parser.add_argument(
