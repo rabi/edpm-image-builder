@@ -1,5 +1,5 @@
 # This file was generated with:
-# block-device-yaml --disk-size 7GiB --boot-size 2048MiB --output dib/edpm-partition-uefi/block-device-default.yaml
+# block-device-yaml --disk-size 7GiB --output dib/edpm-partition-uefi/block-device-default.yaml
 # See: https://github.com/openstack-k8s-operators/edpm-image-builder/
 - local_loop:
     name: image0
